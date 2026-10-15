@@ -605,7 +605,7 @@ body {
       if (!found && tinh && tinh.dataset && tinh.dataset.ten) {
         found = tinh.dataset.ten;
       }
-      if (found) chonTinh(tinhDangChon === found ? null : found);
+      if (found) { chonTinh(tinhDangChon === found ? null : found); vuaKeo = true; }
     }
   }
   document.addEventListener('pointerup', ketThucKeo);
