@@ -253,12 +253,26 @@ body {
 @media (max-width: 760px) {
   .khung {
     grid-template-columns: 1fr;
-    grid-template-rows: 44vh minmax(0, 1fr);
+    grid-template-rows: 50vh minmax(0, 1fr);
   }
-  .o-danh-sach { border-left: none; border-top: 2px solid var(--xanh); }
+  .khung.da-chon {
+    grid-template-rows: 28vh minmax(0, 1fr);
+  }
+  .o-danh-sach {
+    border-left: none; border-top: 2px solid var(--xanh);
+    min-height: 0;
+  }
   .dau-trang h1 { font-size: 13.5px; }
   .dau-trang p { display: none; }
   .chu-thich { font-size: 10.5px; padding: 6px 9px; }
+  .vu { padding-block: 14px; }
+  .vu-tinh { font-size: 11px; }
+  .vu-ten { font-size: 15px; line-height: 1.45; }
+  .vu-phu { font-size: 12.5px; margin-top: 5px; }
+  .ds-loc { font-size: 16px; }
+  .ds-dau h2 { font-size: 12px; }
+  .o-tim input { font-size: 14px; padding: 10px 12px; }
+  .trong-rong { font-size: 14px; padding: 28px 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -420,6 +434,11 @@ body {
     });
     p.addEventListener('blur', () => { elNoi.hidden = true; });
     p.dataset.ten = ten;
+    p.addEventListener('click', e => {
+      if (vuaKeo) return;
+      e.stopPropagation();
+      chonTinh(tinhDangChon === ten ? null : ten);
+    });
     p.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -438,6 +457,7 @@ body {
       p.classList.toggle('dang-chon', t === ten);
       p.classList.remove('hover');
     });
+    document.querySelector('.khung').classList.toggle('da-chon', !!ten);
     elDsLoc.textContent = ten || 'Toàn quốc';
     nutBoLoc.hidden = !ten;
     elChuThich.innerHTML = ten
