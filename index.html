@@ -589,9 +589,21 @@ body {
     const tinh = dangKeo.tinh;
     vuaKeo = daDi;
     dangKeo = null;
-    if (!daDi && tinh && tinh.dataset.ten) {
-      const ten = tinh.dataset.ten;
-      chonTinh(tinhDangChon === ten ? null : ten);
+    if (!daDi) {
+      /* Tìm tỉnh: thử elementsFromPoint trước, fallback sang target lưu từ pointerdown */
+      let found = null;
+      try {
+        const els = document.elementsFromPoint(e.clientX, e.clientY);
+        for (const el of els) {
+          if (el.classList && el.classList.contains('tinh') && el.dataset && el.dataset.ten) {
+            found = el.dataset.ten; break;
+          }
+        }
+      } catch(_) {}
+      if (!found && tinh && tinh.dataset && tinh.dataset.ten) {
+        found = tinh.dataset.ten;
+      }
+      if (found) chonTinh(tinhDangChon === found ? null : found);
     }
   }
   document.addEventListener('pointerup', ketThucKeo);
