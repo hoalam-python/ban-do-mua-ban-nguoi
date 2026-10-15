@@ -564,7 +564,8 @@ body {
   let dangKeo = null;
   svg.addEventListener('pointerdown', e => {
     if (e.pointerType === 'touch' && e.isPrimary === false) return;
-    dangKeo = { id: e.pointerId, x: e.clientX, y: e.clientY, daDiChuyen: false };
+    const tinh = e.target.closest ? e.target.closest('.tinh') : null;
+    dangKeo = { id: e.pointerId, x: e.clientX, y: e.clientY, daDiChuyen: false, tinh: tinh };
   });
   document.addEventListener('pointermove', e => {
     if (!dangKeo || e.pointerId !== dangKeo.id) return;
@@ -585,19 +586,12 @@ body {
     if (!dangKeo || e.pointerId !== dangKeo.id) return;
     svg.classList.remove('dang-keo');
     const daDi = dangKeo.daDiChuyen;
+    const tinh = dangKeo.tinh;
     vuaKeo = daDi;
     dangKeo = null;
-    if (!daDi) {
-      /* Tap / click — tìm tỉnh tại vị trí con trỏ */
-      const els = document.elementsFromPoint(e.clientX, e.clientY);
-      for (const el of els) {
-        if (el.classList && el.classList.contains('tinh') && el.dataset.ten) {
-          const ten = el.dataset.ten;
-          chonTinh(tinhDangChon === ten ? null : ten);
-          vuaKeo = true; /* chặn SVG click handler fire lần 2 */
-          break;
-        }
-      }
+    if (!daDi && tinh && tinh.dataset.ten) {
+      const ten = tinh.dataset.ten;
+      chonTinh(tinhDangChon === ten ? null : ten);
     }
   }
   document.addEventListener('pointerup', ketThucKeo);
@@ -630,14 +624,8 @@ body {
   svg.addEventListener('pointerup', boNgon);
   svg.addEventListener('pointercancel', boNgon);
 
-  /* Click chọn tỉnh — delegation trên SVG (hoạt động trên mobile) */
-  svg.addEventListener('click', e => {
-    if (vuaKeo) { vuaKeo = false; return; }
-    const p = e.target.closest('.tinh');
-    if (!p) return;
-    const ten = p.dataset.ten;
-    if (ten) chonTinh(tinhDangChon === ten ? null : ten);
-  });
+  /* Reset vuaKeo khi click vào vùng trống */
+  svg.addEventListener('click', () => { vuaKeo = false; });
 
   // Hiện dải cảnh báo nếu còn dữ liệu mẫu
   if (VU_AN.some(v => v.demo)) {
