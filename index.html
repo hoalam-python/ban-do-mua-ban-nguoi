@@ -1,0 +1,609 @@
+<title>Bản Đồ Vụ Án Mua Bán Người</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+
+<style>
+/* ── Bảng màu Hành Trình Tái Sinh, dùng theo hướng trầm ──
+   Bố cục: bản đồ bên trái + danh sách bên phải (desktop);
+   xếp dọc bản đồ trên / danh sách dưới (điện thoại). */
+:root {
+  --coral:    #ffb0a9;
+  --vang:     #f9d678;
+  --xanh-nhat:#b6ddda;
+  --xanh:     #01877e;
+  --than:     #13313d;
+
+  --nen:        #eef6f6;
+  --mat:        #ffffff;
+  --vien:       #cfe7e5;
+  --chu:        var(--than);
+  --chu-mo:     #4e6f79;
+  --dat-trong:  #dceceb;
+  --dat-co-vu:  #a9d4d0;
+  --dat-hover:  #4ba9a1;
+  --dat-chon:   var(--xanh);
+
+  --f: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --nen:        #0e2630;
+    --mat:        #14323d;
+    --vien:       #24505c;
+    --chu:        #e8f4f3;
+    --chu-mo:     #93b6bd;
+    --dat-trong:  #1b3d49;
+    --dat-co-vu:  #27616b;
+    --dat-hover:  #4ba9a1;
+    --dat-chon:   #19a79c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --nen:        #0e2630;
+  --mat:        #14323d;
+  --vien:       #24505c;
+  --chu:        #e8f4f3;
+  --chu-mo:     #93b6bd;
+  --dat-trong:  #1b3d49;
+  --dat-co-vu:  #27616b;
+  --dat-hover:  #4ba9a1;
+  --dat-chon:   #19a79c;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--f);
+  background: var(--nen);
+  color: var(--chu);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Đầu trang ── */
+.dau-trang {
+  background: var(--than);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  flex: 0 0 auto;
+}
+.dau-trang .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--coral); flex: 0 0 auto;
+}
+.dau-trang h1 {
+  font-size: 15px; font-weight: 700; color: #fff; line-height: 1.25;
+}
+.dau-trang p {
+  font-size: 11px; color: var(--xanh-nhat); margin-top: 2px;
+}
+.tong {
+  margin-left: auto; flex: 0 0 auto;
+  background: var(--xanh); color: #fff;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 11px; border-radius: 99px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── Dải cảnh báo dữ liệu mẫu ── */
+.canh-bao {
+  flex: 0 0 auto;
+  background: var(--vang);
+  color: #4a3a05;
+  font-size: 12px; line-height: 1.5;
+  padding-block: 9px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+}
+.canh-bao b { font-weight: 700; }
+.canh-bao[hidden] { display: none; }
+
+/* ── Khung chính ── */
+.khung {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 360px;
+  min-height: 0;
+}
+
+/* ── Ô bản đồ ── */
+.o-ban-do {
+  position: relative;
+  background: var(--nen);
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  overflow: hidden;
+}
+#bando { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#bando.dang-keo { cursor: grabbing; }
+
+.tinh { stroke: var(--mat); stroke-width: 0.6; vector-effect: non-scaling-stroke; cursor: pointer; }
+.tinh.trong   { fill: var(--dat-trong); }
+.tinh.co-vu   { fill: var(--dat-co-vu); }
+.tinh.hover   { fill: var(--dat-hover); }
+.tinh.dang-chon { fill: var(--dat-chon); stroke: var(--than); stroke-width: 1.4; }
+.tinh:focus-visible { outline: none; stroke: var(--vang); stroke-width: 2.4; }
+
+.chu-thich {
+  position: absolute; top: 12px; left: 12px;
+  background: color-mix(in srgb, var(--than) 88%, transparent);
+  color: #fff; font-size: 11px; line-height: 1.5;
+  padding: 7px 11px; border-radius: 6px;
+  pointer-events: none; max-width: calc(100% - 24px);
+}
+.chu-thich b { color: var(--xanh-nhat); font-weight: 600; }
+
+.nhom-nut {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; flex-direction: column; gap: 6px; align-items: flex-end;
+}
+.nut {
+  font-family: var(--f); font-size: 11px; font-weight: 600;
+  background: var(--mat); color: var(--chu);
+  border: 1px solid var(--vien);
+  padding: 6px 10px; border-radius: 6px; cursor: pointer;
+  white-space: nowrap;
+}
+.nut:hover { background: var(--xanh); color: #fff; border-color: var(--xanh); }
+.nut[hidden] { display: none; }
+.nhom-zoom { display: flex; gap: 4px; }
+.nhom-zoom .nut { width: 30px; text-align: center; padding: 6px 0; font-size: 14px; }
+
+.ten-tinh-noi {
+  position: absolute; bottom: 12px; left: 12px;
+  background: var(--mat); border: 1px solid var(--vien);
+  color: var(--chu); font-size: 12px; font-weight: 600;
+  padding: 5px 11px; border-radius: 6px;
+  pointer-events: none;
+}
+.ten-tinh-noi[hidden] { display: none; }
+
+/* ── Ô danh sách ── */
+.o-danh-sach {
+  background: var(--mat);
+  border-left: 1px solid var(--vien);
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+}
+.ds-dau {
+  padding-block: 14px 11px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--vien);
+  flex: 0 0 auto;
+}
+.ds-dau h2 {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--chu-mo);
+}
+.ds-loc {
+  font-size: 14px; font-weight: 600; color: var(--xanh);
+  margin-top: 3px; min-height: 21px;
+}
+.o-tim {
+  padding-block: 10px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--vien);
+  flex: 0 0 auto;
+}
+.o-tim input {
+  width: 100%; font-family: var(--f); font-size: 12.5px;
+  color: var(--chu); background: var(--nen);
+  border: 1px solid var(--vien); border-radius: 7px;
+  padding: 8px 11px; outline: none;
+}
+.o-tim input:focus { border-color: var(--xanh); }
+
+.danh-sach { flex: 1; overflow-y: auto; min-height: 0; }
+
+.vu {
+  display: block; text-decoration: none; color: inherit;
+  padding-block: 12px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--vien);
+}
+.vu:hover { background: color-mix(in srgb, var(--xanh-nhat) 28%, transparent); }
+.vu:focus-visible { outline: 2px solid var(--xanh); outline-offset: -2px; }
+.vu-tinh {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--xanh); margin-bottom: 4px;
+}
+.vu-tinh::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--coral); flex: 0 0 auto;
+}
+.vu-ten { display: block; font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.vu:hover .vu-ten { color: var(--xanh); }
+.vu-phu {
+  display: block;
+  font-size: 11px; color: var(--chu-mo); margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trong-rong {
+  padding: 36px 20px; text-align: center;
+  color: var(--chu-mo); font-size: 13px; line-height: 1.65;
+}
+
+/* ── Chân trang ── */
+.chan {
+  flex: 0 0 auto;
+  background: var(--than); color: #8fb3ba;
+  font-size: 10.5px; line-height: 1.6;
+  padding-block: 9px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+}
+.chan b { color: var(--xanh-nhat); font-weight: 600; }
+
+/* ── Điện thoại ── */
+@media (max-width: 760px) {
+  .khung {
+    grid-template-columns: 1fr;
+    grid-template-rows: 44vh minmax(0, 1fr);
+  }
+  .o-danh-sach { border-left: none; border-top: 2px solid var(--xanh); }
+  .dau-trang h1 { font-size: 13.5px; }
+  .dau-trang p { display: none; }
+  .chu-thich { font-size: 10.5px; padding: 6px 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<!-- ═══ Ranh giới 34 tỉnh sau sáp nhập (Natural Earth, đã gộp & đơn giản hóa) ═══ -->
+<script src="vn34.js"></script>
+
+<!-- ═══ DỮ LIỆU VỤ ÁN — mở file cases.js để thêm, sửa, xoá ═══ -->
+<script src="cases.js"></script>
+
+<header class="dau-trang">
+  <span class="dot" aria-hidden="true"></span>
+  <div>
+    <h1>Bản đồ vụ án mua bán người</h1>
+    <p>Tổng hợp từ thông tin công khai của công an các tỉnh, thành</p>
+  </div>
+  <span class="tong" id="tong">0 vụ</span>
+</header>
+
+<div class="canh-bao" id="canhBao" hidden>
+  <b>⚠ Dữ liệu mẫu:</b> Trang đang hiển thị vụ án giả để test. Hãy xoá các dòng có <code>demo: true</code> trong <code>cases.js</code> trước khi chia sẻ.
+</div>
+
+<div class="khung">
+
+  <div class="o-ban-do">
+    <svg id="bando" role="img" aria-label="Bản đồ 34 tỉnh, thành Việt Nam sau sáp nhập"></svg>
+
+    <p class="chu-thich" id="chuThich">Nhấp vào một tỉnh để lọc danh sách</p>
+
+    <div class="nhom-nut">
+      <button class="nut" id="nutBoLoc" type="button" hidden>Bỏ lọc</button>
+      <div class="nhom-zoom">
+        <button class="nut" id="nutThuNho" type="button" aria-label="Thu nhỏ">−</button>
+        <button class="nut" id="nutPhongTo" type="button" aria-label="Phóng to">+</button>
+        <button class="nut" id="nutVeGoc" type="button" aria-label="Về mặc định">⤾</button>
+      </div>
+    </div>
+
+    <p class="ten-tinh-noi" id="tenTinhNoi" hidden></p>
+  </div>
+
+  <div class="o-danh-sach">
+    <div class="ds-dau">
+      <h2>Danh sách vụ án</h2>
+      <div class="ds-loc" id="dsLoc">Toàn quốc</div>
+    </div>
+    <div class="o-tim">
+      <input type="search" id="oTim" placeholder="Tìm theo tiêu đề hoặc tỉnh…" aria-label="Tìm kiếm vụ án">
+    </div>
+    <div class="danh-sach" id="danhSach"></div>
+  </div>
+
+</div>
+
+<footer class="chan">
+  Dữ liệu tổng hợp từ nguồn công khai, phân loại theo <b>tỉnh nơi vụ án được phát hiện hoặc xử lý</b>.
+  Bản đồ theo <b>34 tỉnh, thành sau sáp nhập</b>. Trang này chỉ nhằm mục đích giáo dục, không phải kênh tiếp nhận tố giác.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const svg       = document.getElementById('bando');
+  const elTong    = document.getElementById('tong');
+  const elDsLoc   = document.getElementById('dsLoc');
+  const elDanhSach= document.getElementById('danhSach');
+  const elTim     = document.getElementById('oTim');
+  const elChuThich= document.getElementById('chuThich');
+  const elNoi     = document.getElementById('tenTinhNoi');
+  const nutBoLoc  = document.getElementById('nutBoLoc');
+
+  let tinhDangChon = null;
+
+  /* ── Đếm số vụ theo tỉnh ── */
+  const demTheoTinh = {};
+  VU_AN.forEach(v => { demTheoTinh[v.tinh] = (demTheoTinh[v.tinh] || 0) + 1; });
+
+  /* Cảnh báo trong console nếu tên tỉnh trong dữ liệu không khớp bản đồ */
+  const tenHopLe = new Set(VN34.features.map(f => f.properties.ten));
+  Object.keys(demTheoTinh).forEach(t => {
+    if (!tenHopLe.has(t)) console.warn('Tên tỉnh không khớp bản đồ:', t);
+  });
+
+  /* ── Chiếu toạ độ: Mercator đơn giản, đủ chính xác cho Việt Nam ── */
+  function chieu(lon, lat) {
+    const x = lon;
+    const y = -Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2)) * (180 / Math.PI);
+    return [x, y];
+  }
+
+  /* ── Tìm khung bao để đặt viewBox ── */
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  VN34.features.forEach(f => {
+    f.geometry.coordinates.forEach(poly => {
+      poly[0].forEach(([lon, lat]) => {
+        const [x, y] = chieu(lon, lat);
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      });
+    });
+  });
+  const dem = 0.35;
+  const goc = {
+    x: minX - dem,
+    y: minY - dem,
+    w: (maxX - minX) + dem * 2,
+    h: (maxY - minY) + dem * 2
+  };
+
+  function datViewBox(v) {
+    svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
+  }
+  let xem = { ...goc };
+  datViewBox(xem);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+  /* ── Vẽ các tỉnh ── */
+  const NS = 'http://www.w3.org/2000/svg';
+  const dungPath = {};
+
+  VN34.features.forEach(f => {
+    const ten = f.properties.ten;
+    let d = '';
+    f.geometry.coordinates.forEach(poly => {
+      poly[0].forEach(([lon, lat], i) => {
+        const [x, y] = chieu(lon, lat);
+        d += (i === 0 ? 'M' : 'L') + x.toFixed(4) + ' ' + y.toFixed(4);
+      });
+      d += 'Z';
+    });
+
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('class', 'tinh ' + (demTheoTinh[ten] ? 'co-vu' : 'trong'));
+    p.setAttribute('tabindex', '0');
+    p.setAttribute('role', 'button');
+    const soVu = demTheoTinh[ten] || 0;
+    p.setAttribute('aria-label', ten + ' — ' + soVu + ' vụ');
+
+    p.addEventListener('mouseenter', () => {
+      if (tinhDangChon !== ten) p.classList.add('hover');
+      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' vụ' : ' · chưa có vụ nào');
+      elNoi.hidden = false;
+    });
+    p.addEventListener('mouseleave', () => {
+      p.classList.remove('hover');
+      elNoi.hidden = true;
+    });
+    p.addEventListener('focus', () => {
+      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' vụ' : ' · chưa có vụ nào');
+      elNoi.hidden = false;
+    });
+    p.addEventListener('blur', () => { elNoi.hidden = true; });
+    p.addEventListener('click', () => chonTinh(tinhDangChon === ten ? null : ten));
+    p.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        chonTinh(tinhDangChon === ten ? null : ten);
+      }
+    });
+
+    svg.appendChild(p);
+    dungPath[ten] = p;
+  });
+
+  /* ── Chọn / bỏ chọn tỉnh ── */
+  function chonTinh(ten) {
+    tinhDangChon = ten;
+    Object.entries(dungPath).forEach(([t, p]) => {
+      p.classList.toggle('dang-chon', t === ten);
+      p.classList.remove('hover');
+    });
+    elDsLoc.textContent = ten || 'Toàn quốc';
+    nutBoLoc.hidden = !ten;
+    elChuThich.innerHTML = ten
+      ? 'Đang xem <b>' + ten + '</b> — nhấp lại để bỏ chọn'
+      : 'Nhấp vào một tỉnh để lọc danh sách';
+    veDanhSach();
+  }
+
+  nutBoLoc.addEventListener('click', () => chonTinh(null));
+
+  /* ── Vẽ danh sách ── */
+  function veDanhSach() {
+    const q = elTim.value.trim().toLowerCase();
+    const loc = VU_AN.filter(v => {
+      const theoTinh = !tinhDangChon || v.tinh === tinhDangChon;
+      const theoTim  = !q || v.ten.toLowerCase().includes(q) || v.tinh.toLowerCase().includes(q);
+      return theoTinh && theoTim;
+    });
+
+    elTong.textContent = loc.length + ' vụ';
+
+    if (!loc.length) {
+      elDanhSach.innerHTML =
+        '<p class="trong-rong">Chưa có vụ án nào' +
+        (tinhDangChon ? ' được ghi nhận tại <strong>' + esc(tinhDangChon) + '</strong>' : ' khớp với từ khoá') +
+        '.</p>';
+      return;
+    }
+
+    elDanhSach.innerHTML = loc.map(v =>
+      '<a class="vu" href="' + esc(v.link) + '" target="_blank" rel="noopener noreferrer">' +
+        '<span class="vu-tinh">' + esc(v.tinh) + '</span>' +
+        '<span class="vu-ten">' + esc(v.ten) + '</span>' +
+        '<span class="vu-phu">' + esc(v.ngay) + ' · ' + esc(v.nguon) + '</span>' +
+      '</a>'
+    ).join('');
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  elTim.addEventListener('input', veDanhSach);
+
+  /* ── Phóng to / thu nhỏ / kéo ── */
+  function phong(tiLe, tamX, tamY) {
+    const wMoi = xem.w * tiLe;
+    const hMoi = xem.h * tiLe;
+    if (wMoi > goc.w * 1.05 || wMoi < goc.w * 0.12) return;
+    xem = {
+      x: tamX - (tamX - xem.x) * tiLe,
+      y: tamY - (tamY - xem.y) * tiLe,
+      w: wMoi,
+      h: hMoi
+    };
+    datViewBox(xem);
+  }
+
+  function tamHienTai() {
+    return [xem.x + xem.w / 2, xem.y + xem.h / 2];
+  }
+
+  document.getElementById('nutPhongTo').addEventListener('click', () => {
+    const [cx, cy] = tamHienTai(); phong(0.72, cx, cy);
+  });
+  document.getElementById('nutThuNho').addEventListener('click', () => {
+    const [cx, cy] = tamHienTai(); phong(1 / 0.72, cx, cy);
+  });
+  document.getElementById('nutVeGoc').addEventListener('click', () => {
+    xem = { ...goc }; datViewBox(xem);
+  });
+
+  /* Toạ độ con trỏ trong hệ viewBox */
+  function sangToaDo(clientX, clientY) {
+    const r = svg.getBoundingClientRect();
+    // preserveAspectRatio="meet" => tỉ lệ bằng nhau hai chiều, có thanh lề
+    const tiLe = Math.min(r.width / xem.w, r.height / xem.h);
+    const leX = (r.width  - xem.w * tiLe) / 2;
+    const leY = (r.height - xem.h * tiLe) / 2;
+    return [
+      xem.x + (clientX - r.left - leX) / tiLe,
+      xem.y + (clientY - r.top  - leY) / tiLe
+    ];
+  }
+
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const [cx, cy] = sangToaDo(e.clientX, e.clientY);
+    phong(e.deltaY > 0 ? 1.12 : 1 / 1.12, cx, cy);
+  }, { passive: false });
+
+  /* Kéo bằng chuột / một ngón */
+  let dangKeo = null;
+  svg.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch' && e.isPrimary === false) return;
+    dangKeo = { id: e.pointerId, x: e.clientX, y: e.clientY, daDiChuyen: false };
+    svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!dangKeo || e.pointerId !== dangKeo.id) return;
+    const r = svg.getBoundingClientRect();
+    const tiLe = Math.min(r.width / xem.w, r.height / xem.h);
+    const dx = (e.clientX - dangKeo.x) / tiLe;
+    const dy = (e.clientY - dangKeo.y) / tiLe;
+    if (Math.abs(dx) + Math.abs(dy) > 0.02) {
+      dangKeo.daDiChuyen = true;
+      svg.classList.add('dang-keo');
+      xem.x -= dx; xem.y -= dy;
+      datViewBox(xem);
+      dangKeo.x = e.clientX; dangKeo.y = e.clientY;
+    }
+  });
+  let vuaKeo = false;
+  function ketThucKeo(e) {
+    if (!dangKeo || e.pointerId !== dangKeo.id) return;
+    svg.classList.remove('dang-keo');
+    // Nếu vừa kéo bản đồ thì bỏ qua cú click ngay sau đó,
+    // để không chọn nhầm tỉnh nằm dưới con trỏ.
+    vuaKeo = dangKeo.daDiChuyen;
+    dangKeo = null;
+  }
+  svg.addEventListener('pointerup', ketThucKeo);
+  svg.addEventListener('pointercancel', ketThucKeo);
+
+  /* Chụm hai ngón để phóng */
+  const ngon = new Map();
+  let khoangTruoc = null;
+  svg.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch') return;
+    ngon.set(e.pointerId, [e.clientX, e.clientY]);
+  });
+  svg.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'touch' || !ngon.has(e.pointerId)) return;
+    ngon.set(e.pointerId, [e.clientX, e.clientY]);
+    if (ngon.size !== 2) return;
+    dangKeo = null;
+    const [[ax, ay], [bx, by]] = [...ngon.values()];
+    const kc = Math.hypot(bx - ax, by - ay);
+    if (khoangTruoc) {
+      const [cx, cy] = sangToaDo((ax + bx) / 2, (ay + by) / 2);
+      phong(khoangTruoc / kc, cx, cy);
+    }
+    khoangTruoc = kc;
+  });
+  function boNgon(e) {
+    ngon.delete(e.pointerId);
+    if (ngon.size < 2) khoangTruoc = null;
+  }
+  svg.addEventListener('pointerup', boNgon);
+  svg.addEventListener('pointercancel', boNgon);
+
+  /* Chặn click chọn tỉnh nếu vừa kéo bản đồ */
+  svg.addEventListener('click', e => {
+    if (vuaKeo) {
+      vuaKeo = false;
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
+
+  // Hiện dải cảnh báo nếu còn dữ liệu mẫu
+  if (VU_AN.some(v => v.demo)) {
+    document.getElementById('canhBao').hidden = false;
+  }
+
+  veDanhSach();
+})();
+</script>
