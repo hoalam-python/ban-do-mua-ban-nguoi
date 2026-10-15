@@ -435,7 +435,7 @@ body {
     p.addEventListener('blur', () => { elNoi.hidden = true; });
     p.dataset.ten = ten;
     p.addEventListener('click', e => {
-      if (vuaKeo) return;
+      if (vuaKeo) { vuaKeo = false; return; }
       e.stopPropagation();
       chonTinh(tinhDangChon === ten ? null : ten);
     });
