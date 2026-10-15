@@ -443,10 +443,7 @@ body {
     });
     p.addEventListener('blur', () => { elNoi.hidden = true; });
     p.dataset.ten = ten;
-    p.addEventListener('pointerup', e => {
-      if (dangKeo && dangKeo.daDiChuyen) return;
-      chonTinh(tinhDangChon === ten ? null : ten);
-    });
+    /* click xử lý tập trung trong ketThucKeo */
     p.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -587,8 +584,20 @@ body {
   function ketThucKeo(e) {
     if (!dangKeo || e.pointerId !== dangKeo.id) return;
     svg.classList.remove('dang-keo');
-    vuaKeo = dangKeo.daDiChuyen;
+    const daDi = dangKeo.daDiChuyen;
+    vuaKeo = daDi;
     dangKeo = null;
+    if (!daDi) {
+      /* Tap / click — tìm tỉnh tại vị trí con trỏ */
+      const els = document.elementsFromPoint(e.clientX, e.clientY);
+      for (const el of els) {
+        if (el.classList && el.classList.contains('tinh') && el.dataset.ten) {
+          const ten = el.dataset.ten;
+          chonTinh(tinhDangChon === ten ? null : ten);
+          break;
+        }
+      }
+    }
   }
   document.addEventListener('pointerup', ketThucKeo);
   document.addEventListener('pointercancel', ketThucKeo);
@@ -620,14 +629,9 @@ body {
   svg.addEventListener('pointerup', boNgon);
   svg.addEventListener('pointercancel', boNgon);
 
-  /* Click chọn tỉnh — dùng event delegation trên SVG
-     để tránh setPointerCapture nuốt click trên path */
+  /* Click trên SVG ngoài tỉnh — bỏ chọn */
   svg.addEventListener('click', e => {
     if (vuaKeo) { vuaKeo = false; return; }
-    const p = e.target.closest('.tinh');
-    if (!p) return;
-    const ten = p.dataset.ten;
-    if (ten) chonTinh(tinhDangChon === ten ? null : ten);
   });
 
   // Hiện dải cảnh báo nếu còn dữ liệu mẫu
