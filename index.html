@@ -639,25 +639,27 @@ body {
   /* Reset vuaKeo khi click vào vùng trống */
   svg.addEventListener('click', () => { vuaKeo = false; });
 
-  /* Touch trên mobile — touchend đáng tin hơn pointer/click trên SVG path */
-  let touchStart = null;
+  /* Touch trên mobile — lưu target từ touchstart, chọn tỉnh khi touchend */
+  let touchTarget = null;
+  let touchXY = null;
   svg.addEventListener('touchstart', e => {
     if (e.touches.length === 1) {
+      touchTarget = e.target;
       const t = e.touches[0];
-      touchStart = { x: t.clientX, y: t.clientY };
+      touchXY = { x: t.clientX, y: t.clientY };
     } else {
-      touchStart = null;
+      touchTarget = null;
     }
   }, { passive: true });
   svg.addEventListener('touchend', e => {
-    if (!touchStart || e.changedTouches.length === 0) return;
+    if (!touchTarget || !touchXY) return;
     const t = e.changedTouches[0];
-    const dx = Math.abs(t.clientX - touchStart.x);
-    const dy = Math.abs(t.clientY - touchStart.y);
-    touchStart = null;
-    if (dx + dy > 10) return; /* kéo, không phải tap */
-    const el = document.elementFromPoint(t.clientX, t.clientY);
-    if (!el) return;
+    const dx = Math.abs(t.clientX - touchXY.x);
+    const dy = Math.abs(t.clientY - touchXY.y);
+    const el = touchTarget;
+    touchTarget = null;
+    touchXY = null;
+    if (dx + dy > 10) return;
     const p = el.closest ? el.closest('.tinh') : null;
     if (p && p.dataset.ten) {
       e.preventDefault();
