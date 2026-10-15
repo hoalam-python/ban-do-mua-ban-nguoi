@@ -606,6 +606,7 @@ body {
         found = tinh.dataset.ten;
       }
       if (found) chonTinh(tinhDangChon === found ? null : found);
+      else if (tinhDangChon) chonTinh(null);
     }
   }
   document.addEventListener('pointerup', ketThucKeo);
@@ -642,7 +643,7 @@ body {
   svg.addEventListener('click', e => {
     if (vuaKeo) { vuaKeo = false; return; }
     const p = e.target.closest('.tinh');
-    if (!p) return;
+    if (!p) { if (tinhDangChon) chonTinh(null); return; }
     const ten = p.dataset.ten;
     if (ten) chonTinh(tinhDangChon === ten ? null : ten);
   });
