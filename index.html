@@ -636,37 +636,13 @@ body {
   svg.addEventListener('pointerup', boNgon);
   svg.addEventListener('pointercancel', boNgon);
 
-  /* Reset vuaKeo khi click vào vùng trống */
-  svg.addEventListener('click', () => { vuaKeo = false; });
-
-  /* Touch trên mobile — lưu target từ touchstart, chọn tỉnh khi touchend */
-  let touchTarget = null;
-  let touchXY = null;
-  svg.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) {
-      touchTarget = e.target;
-      const t = e.touches[0];
-      touchXY = { x: t.clientX, y: t.clientY };
-    } else {
-      touchTarget = null;
-    }
-  }, { passive: true });
-  svg.addEventListener('touchend', e => {
-    if (!touchTarget || !touchXY) return;
-    const t = e.changedTouches[0];
-    const dx = Math.abs(t.clientX - touchXY.x);
-    const dy = Math.abs(t.clientY - touchXY.y);
-    const el = touchTarget;
-    touchTarget = null;
-    touchXY = null;
-    if (dx + dy > 10) return;
-    const p = el.closest ? el.closest('.tinh') : null;
-    if (p && p.dataset.ten) {
-      e.preventDefault();
-      dangKeo = null; /* chặn ketThucKeo fire lần 2 */
-      const ten = p.dataset.ten;
-      chonTinh(tinhDangChon === ten ? null : ten);
-    }
+  /* Click chọn tỉnh — SVG delegation (nhạy trên mobile) */
+  svg.addEventListener('click', e => {
+    if (vuaKeo) { vuaKeo = false; return; }
+    const p = e.target.closest('.tinh');
+    if (!p) return;
+    const ten = p.dataset.ten;
+    if (ten) chonTinh(tinhDangChon === ten ? null : ten);
   });
 
   // Hiện dải cảnh báo nếu còn dữ liệu mẫu
