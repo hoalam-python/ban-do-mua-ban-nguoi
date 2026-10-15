@@ -540,9 +540,8 @@ body {
   svg.addEventListener('pointerdown', e => {
     if (e.pointerType === 'touch' && e.isPrimary === false) return;
     dangKeo = { id: e.pointerId, x: e.clientX, y: e.clientY, daDiChuyen: false };
-    svg.setPointerCapture(e.pointerId);
   });
-  svg.addEventListener('pointermove', e => {
+  document.addEventListener('pointermove', e => {
     if (!dangKeo || e.pointerId !== dangKeo.id) return;
     const r = svg.getBoundingClientRect();
     const tiLe = Math.min(r.width / xem.w, r.height / xem.h);
@@ -560,13 +559,11 @@ body {
   function ketThucKeo(e) {
     if (!dangKeo || e.pointerId !== dangKeo.id) return;
     svg.classList.remove('dang-keo');
-    // Nếu vừa kéo bản đồ thì bỏ qua cú click ngay sau đó,
-    // để không chọn nhầm tỉnh nằm dưới con trỏ.
     vuaKeo = dangKeo.daDiChuyen;
     dangKeo = null;
   }
-  svg.addEventListener('pointerup', ketThucKeo);
-  svg.addEventListener('pointercancel', ketThucKeo);
+  document.addEventListener('pointerup', ketThucKeo);
+  document.addEventListener('pointercancel', ketThucKeo);
 
   /* Chụm hai ngón để phóng */
   const ngon = new Map();
