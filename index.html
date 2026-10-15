@@ -253,14 +253,23 @@ body {
 @media (max-width: 760px) {
   .khung {
     grid-template-columns: 1fr;
-    grid-template-rows: 50vh minmax(0, 1fr);
-  }
-  .khung.da-chon {
-    grid-template-rows: 28vh minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    position: relative;
+    overflow: hidden;
   }
   .o-danh-sach {
-    border-left: none; border-top: 2px solid var(--xanh);
-    min-height: 0;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    border-left: none;
+    border-top: 2px solid var(--xanh);
+    z-index: 10;
+    background: var(--mat);
+  }
+  .khung.da-chon .o-danh-sach {
+    transform: translateY(0);
   }
   .dau-trang h1 { font-size: 13.5px; }
   .dau-trang p { display: none; }
@@ -434,9 +443,8 @@ body {
     });
     p.addEventListener('blur', () => { elNoi.hidden = true; });
     p.dataset.ten = ten;
-    p.addEventListener('click', e => {
-      if (vuaKeo) { vuaKeo = false; return; }
-      e.stopPropagation();
+    p.addEventListener('pointerup', e => {
+      if (dangKeo && dangKeo.daDiChuyen) return;
       chonTinh(tinhDangChon === ten ? null : ten);
     });
     p.addEventListener('keydown', e => {
