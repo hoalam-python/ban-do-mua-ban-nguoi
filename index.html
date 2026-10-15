@@ -594,6 +594,7 @@ body {
         if (el.classList && el.classList.contains('tinh') && el.dataset.ten) {
           const ten = el.dataset.ten;
           chonTinh(tinhDangChon === ten ? null : ten);
+          vuaKeo = true; /* chặn SVG click handler fire lần 2 */
           break;
         }
       }
