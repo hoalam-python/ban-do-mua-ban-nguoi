@@ -663,6 +663,7 @@ body {
     const p = el.closest ? el.closest('.tinh') : null;
     if (p && p.dataset.ten) {
       e.preventDefault();
+      dangKeo = null; /* chặn ketThucKeo fire lần 2 */
       const ten = p.dataset.ten;
       chonTinh(tinhDangChon === ten ? null : ten);
     }
