@@ -278,7 +278,7 @@ body {
     <h1>Bản đồ vụ án mua bán người</h1>
     <p>Tổng hợp từ thông tin công khai của công an các tỉnh, thành</p>
   </div>
-  <span class="tong" id="tong">0 vụ</span>
+  <span class="tong" id="tong">0 ví dụ</span>
 </header>
 
 <div class="canh-bao" id="canhBao" hidden>
@@ -403,11 +403,11 @@ body {
     p.setAttribute('tabindex', '0');
     p.setAttribute('role', 'button');
     const soVu = demTheoTinh[ten] || 0;
-    p.setAttribute('aria-label', ten + ' — ' + soVu + ' vụ');
+    p.setAttribute('aria-label', ten + ' — ' + soVu + ' ví dụ');
 
     p.addEventListener('mouseenter', () => {
       if (tinhDangChon !== ten) p.classList.add('hover');
-      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' vụ' : ' · chưa có vụ nào');
+      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' ví dụ' : ' · chưa có ví dụ nào');
       elNoi.hidden = false;
     });
     p.addEventListener('mouseleave', () => {
@@ -415,7 +415,7 @@ body {
       elNoi.hidden = true;
     });
     p.addEventListener('focus', () => {
-      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' vụ' : ' · chưa có vụ nào');
+      elNoi.textContent = ten + (soVu ? ' · ' + soVu + ' ví dụ' : ' · chưa có ví dụ nào');
       elNoi.hidden = false;
     });
     p.addEventListener('blur', () => { elNoi.hidden = true; });
@@ -457,11 +457,11 @@ body {
       return theoTinh && theoTim;
     });
 
-    elTong.textContent = loc.length + ' vụ';
+    elTong.textContent = loc.length + ' ví dụ';
 
     if (!loc.length) {
       elDanhSach.innerHTML =
-        '<p class="trong-rong">Chưa có vụ án nào' +
+        '<p class="trong-rong">Chưa có ví dụ nào' +
         (tinhDangChon ? ' được ghi nhận tại <strong>' + esc(tinhDangChon) + '</strong>' : ' khớp với từ khoá') +
         '.</p>';
       return;
