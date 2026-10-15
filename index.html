@@ -548,7 +548,7 @@ body {
     const tiLe = Math.min(r.width / xem.w, r.height / xem.h);
     const dx = (e.clientX - dangKeo.x) / tiLe;
     const dy = (e.clientY - dangKeo.y) / tiLe;
-    if (Math.abs(dx) + Math.abs(dy) > 0.02) {
+    if (Math.abs(dx) + Math.abs(dy) > 2) {
       dangKeo.daDiChuyen = true;
       svg.classList.add('dang-keo');
       xem.x -= dx; xem.y -= dy;
