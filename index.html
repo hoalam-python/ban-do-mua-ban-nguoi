@@ -275,14 +275,14 @@ body {
 <header class="dau-trang">
   <span class="dot" aria-hidden="true"></span>
   <div>
-    <h1>Bản đồ vụ án mua bán người</h1>
+    <h1>Bản đồ ví dụ mua bán người</h1>
     <p>Tổng hợp từ thông tin công khai của công an các tỉnh, thành</p>
   </div>
   <span class="tong" id="tong">0 ví dụ</span>
 </header>
 
 <div class="canh-bao" id="canhBao" hidden>
-  <b>⚠ Dữ liệu mẫu:</b> Trang đang hiển thị vụ án giả để test. Hãy xoá các dòng có <code>demo: true</code> trong <code>cases.js</code> trước khi chia sẻ.
+  <b>⚠ Dữ liệu mẫu:</b> Trang đang hiển thị ví dụ giả để test. Hãy xoá các dòng có <code>demo: true</code> trong <code>cases.js</code> trước khi chia sẻ.
 </div>
 
 <div class="khung">
@@ -306,11 +306,11 @@ body {
 
   <div class="o-danh-sach">
     <div class="ds-dau">
-      <h2>Danh sách vụ án</h2>
+      <h2>Danh sách ví dụ</h2>
       <div class="ds-loc" id="dsLoc">Toàn quốc</div>
     </div>
     <div class="o-tim">
-      <input type="search" id="oTim" placeholder="Tìm theo tiêu đề hoặc tỉnh…" aria-label="Tìm kiếm vụ án">
+      <input type="search" id="oTim" placeholder="Tìm theo tiêu đề hoặc tỉnh…" aria-label="Tìm kiếm ví dụ">
     </div>
     <div class="danh-sach" id="danhSach"></div>
   </div>
@@ -318,7 +318,7 @@ body {
 </div>
 
 <footer class="chan">
-  Dữ liệu tổng hợp từ nguồn công khai, phân loại theo <b>tỉnh nơi vụ án được phát hiện hoặc xử lý</b>.
+  Dữ liệu tổng hợp từ nguồn công khai, phân loại theo <b>tỉnh nơi ví dụ được phát hiện hoặc xử lý</b>.
   Bản đồ theo <b>34 tỉnh, thành sau sáp nhập</b>. Trang này chỉ nhằm mục đích giáo dục, không phải kênh tiếp nhận tố giác.
 </footer>
 
@@ -337,7 +337,7 @@ body {
 
   let tinhDangChon = null;
 
-  /* ── Đếm số vụ theo tỉnh ── */
+  /* ── Đếm số ví dụ theo tỉnh ── */
   const demTheoTinh = {};
   VU_AN.forEach(v => { demTheoTinh[v.tinh] = (demTheoTinh[v.tinh] || 0) + 1; });
 
@@ -450,9 +450,16 @@ body {
 
   /* ── Vẽ danh sách ── */
   function veDanhSach() {
+    if (!tinhDangChon) {
+      elTong.textContent = VU_AN.length + ' ví dụ';
+      elDanhSach.innerHTML =
+        '<p class="trong-rong">Nhấp vào một tỉnh trên bản đồ để xem danh sách ví dụ.</p>';
+      return;
+    }
+
     const q = elTim.value.trim().toLowerCase();
     const loc = VU_AN.filter(v => {
-      const theoTinh = !tinhDangChon || v.tinh === tinhDangChon;
+      const theoTinh = v.tinh === tinhDangChon;
       const theoTim  = !q || v.ten.toLowerCase().includes(q) || v.tinh.toLowerCase().includes(q);
       return theoTinh && theoTim;
     });
@@ -461,9 +468,7 @@ body {
 
     if (!loc.length) {
       elDanhSach.innerHTML =
-        '<p class="trong-rong">Chưa có ví dụ nào' +
-        (tinhDangChon ? ' được ghi nhận tại <strong>' + esc(tinhDangChon) + '</strong>' : ' khớp với từ khoá') +
-        '.</p>';
+        '<p class="trong-rong">Chưa có ví dụ nào được ghi nhận tại <strong>' + esc(tinhDangChon) + '</strong>.</p>';
       return;
     }
 
