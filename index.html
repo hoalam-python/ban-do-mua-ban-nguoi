@@ -629,9 +629,13 @@ body {
   svg.addEventListener('pointerup', boNgon);
   svg.addEventListener('pointercancel', boNgon);
 
-  /* Click trên SVG ngoài tỉnh — bỏ chọn */
+  /* Click chọn tỉnh — delegation trên SVG (hoạt động trên mobile) */
   svg.addEventListener('click', e => {
     if (vuaKeo) { vuaKeo = false; return; }
+    const p = e.target.closest('.tinh');
+    if (!p) return;
+    const ten = p.dataset.ten;
+    if (ten) chonTinh(tinhDangChon === ten ? null : ten);
   });
 
   // Hiện dải cảnh báo nếu còn dữ liệu mẫu
