@@ -639,6 +639,23 @@ body {
   /* Reset vuaKeo khi click vào vùng trống */
   svg.addEventListener('click', () => { vuaKeo = false; });
 
+  /* Touch trên mobile — touchend đáng tin hơn pointer/click trên SVG path */
+  let touchMoved = false;
+  svg.addEventListener('touchstart', () => { touchMoved = false; }, { passive: true });
+  svg.addEventListener('touchmove', () => { touchMoved = true; }, { passive: true });
+  svg.addEventListener('touchend', e => {
+    if (touchMoved || e.changedTouches.length === 0) return;
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    if (!el) return;
+    const p = el.closest ? el.closest('.tinh') : null;
+    if (p && p.dataset.ten) {
+      e.preventDefault();
+      const ten = p.dataset.ten;
+      chonTinh(tinhDangChon === ten ? null : ten);
+    }
+  });
+
   // Hiện dải cảnh báo nếu còn dữ liệu mẫu
   if (VU_AN.some(v => v.demo)) {
     document.getElementById('canhBao').hidden = false;
